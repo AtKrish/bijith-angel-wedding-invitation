@@ -49,6 +49,9 @@ export function initRings(config) {
   let stageTop = 0;
   let closingTop = 0;
   let journeyEnd = 0;
+  let mergeStart = 0;
+  let mergeEnd = 0;
+  let mergeProgress = 0;
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   let celebrated = false;
   try { celebrated = sessionStorage.getItem('ring-interlock-celebrated') === '1'; } catch {}
@@ -148,11 +151,13 @@ export function initRings(config) {
     renderOnce();
   }
   function recalculateAnchors() {
-    const scroll = window.scrollY;
-    stageTop = stage.getBoundingClientRect().top + scroll;
-    closingTop = closing.getBoundingClientRect().top + scroll;
+    const scrollY = window.scrollY;
+    stageTop = stage.getBoundingClientRect().top + scrollY;
+    closingTop = closing.getBoundingClientRect().top + scrollY;
     const maximumScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    journeyEnd = Math.min(closingTop + closing.offsetHeight * 0.55, maximumScroll);
+    journeyEnd = Math.max(stageTop + stage.offsetHeight, maximumScroll);
+    mergeEnd = Math.min(maximumScroll, Math.max(stageTop, closingTop - window.innerHeight * 0.5));
+    mergeStart = Math.max(stageTop, Math.min(mergeEnd - window.innerHeight * 0.45, closingTop - window.innerHeight * 0.95));
   }
   function setJourneyLayer(active) {
     document.body.classList.toggle('ring-journey-active', active);
@@ -163,9 +168,8 @@ export function initRings(config) {
     const wasActive = journeyActive;
     const y = window.scrollY;
     const start = stageTop - window.innerHeight * 0.18;
-    const maximumScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
-    journeyEnd = Math.min(maximumScroll, Math.max(start + window.innerHeight * 0.8, journeyEnd));
     progress = THREE.MathUtils.clamp((y - start) / Math.max(1, journeyEnd - start), 0, 1);
+    mergeProgress = THREE.MathUtils.clamp((y - mergeStart) / Math.max(1, mergeEnd - mergeStart), 0, 1);
     journeyActive = y >= start && y <= journeyEnd + 2;
     const layerActive = journeyActive && loaded;
     const layerChanged = layerActive !== journeyLayerActive;
@@ -223,7 +227,7 @@ export function initRings(config) {
     const count = width < 600 ? 48 : 92;
     const pieces = Array.from({ length: count }, (_, i) => ({
       x: width / 2 + (Math.random() - 0.5) * 24,
-      y: height * 0.32 + (Math.random() - 0.5) * 20,
+      y: height * 0.52 + (Math.random() - 0.5) * 20,
       vx: (Math.random() - 0.5) * 9,
       vy: -2.8 - Math.random() * 7,
       gravity: 0.1 + Math.random() * 0.1,
@@ -269,7 +273,7 @@ export function initRings(config) {
       if (reducedMotion || progress >= 0.999) animatedProgress = progress;
       else animatedProgress += (progress - animatedProgress) * 0.095;
       if (Math.abs(progress - animatedProgress) < 0.0015) animatedProgress = progress;
-      if (animatedProgress >= 0.999 && progress >= 0.999) celebrateInterlock();
+      if (mergeProgress >= 0.999) celebrateInterlock();
       if (loaded) {
         const aspect = Math.max(0.4, camera.aspect);
         const viewHeight = 2 * camera.position.z * Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
@@ -277,14 +281,21 @@ export function initRings(config) {
         const smooth = animatedProgress * animatedProgress * (3 - 2 * animatedProgress);
         models.forEach(rig => {
           const side = rig.userData.side;
-          const mobile = aspect < 0.82;
-          const from = new THREE.Vector3(side * viewWidth * (mobile ? 0.3 : 0.36), viewHeight * 0.34, 0);
-          const to = new THREE.Vector3(side * (mobile ? 0.32 : 0.34), viewHeight * 0.18, side * 0.12);
-          const float = reducedMotion ? 0 : Math.sin(time * 0.0018 + rig.userData.phase) * 0.045 * Math.sin(Math.PI * smooth);
-          rig.position.copy(from).lerp(to, smooth);
-          rig.position.y += float;
-          rig.scale.setScalar(THREE.MathUtils.lerp(mobile ? 0.58 : 0.62, 0.92, smooth));
-          const orientation = rig.userData.startQuaternion.clone().slerp(rig.userData.endQuaternion, smooth);
+          const mobile = window.innerWidth < 760;
+          const edgeX = viewWidth * (mobile ? 0.4 : 0.41 - 0.025 * smooth);
+          const lockX = viewWidth * (mobile ? 0.045 : 0.038);
+          const merge = mergeProgress * mergeProgress * (3 - 2 * mergeProgress);
+          const travel = Math.max(smooth, merge);
+          const float = reducedMotion ? 0 : Math.sin(time * 0.0018 + rig.userData.phase) * 0.045 * Math.sin(Math.PI * travel);
+          const closingScreenY = closing.getBoundingClientRect().top + Math.min(112, closing.offsetHeight * 0.2);
+          const lockY = viewHeight * (0.5 - closingScreenY / window.innerHeight);
+          const pathY = viewHeight * THREE.MathUtils.lerp(0.34, 0.1, smooth);
+          rig.position.set(side * THREE.MathUtils.lerp(edgeX, lockX, merge), THREE.MathUtils.lerp(pathY, lockY, merge) + float, side * 0.12 * merge);
+          const mobileScale = Math.min(1, camera.aspect / 1.3);
+          const scaleFrom = mobile ? 0.48 * mobileScale : 0.62;
+          const scaleTo = mobile ? 0.8 * mobileScale : 0.92;
+          rig.scale.setScalar(THREE.MathUtils.lerp(scaleFrom, scaleTo, smooth));
+          const orientation = rig.userData.startQuaternion.clone().slerp(rig.userData.endQuaternion, travel);
           if (!reducedMotion) {
             const envelope = Math.sin(Math.PI * smooth);
             orientation.multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(
