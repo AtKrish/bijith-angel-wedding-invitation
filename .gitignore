@@ -1,2 +1,109 @@
+# ==========================================
+# Dependencies
+# ==========================================
 node_modules/
+jspm_packages/
+.pnp.*
+.pnpm-store/
+
+# ==========================================
+# Environment variables and secrets
+# ==========================================
+.env
+.env.*
+!.env.example
+
+# ==========================================
+# Build output
+# ==========================================
+dist/
+build/
+.next/
+out/
+.nuxt/
+.output/
+.svelte-kit/
+.astro/
+
+# ==========================================
+# Logs and runtime files
+# ==========================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+pids/
+*.pid
+*.pid.lock
+*.seed
+
+# ==========================================
+# Cache and temporary files
+# ==========================================
+.cache/
+.parcel-cache/
+.vite/
+.nyc_output/
+coverage/
+.grunt/
+.fusebox/
+.dynamodb/
+.firebase/
+.turbo/
+.temp/
+.tern-port
+*.tsbuildinfo
+
+# ==========================================
+# Package manager files
+# ==========================================
+.npm/
+.yarn-integrity
+web_modules/
+bower_components/
+.serverless/
+
+# Preserve Yarn configuration where applicable
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+
+# ==========================================
+# Development tools
+# ==========================================
+.vscode/
+!.vscode/extensions.json
+.vscode-test/
+.eslintcache
+.stylelintcache
+.node_repl_history
+
+# ==========================================
+# Operating system files
+# ==========================================
 .DS_Store
+Thumbs.db
+desktop.ini
+
+# ==========================================
+# Tool-specific generated files
+# ==========================================
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+**/.vitepress/dist
+**/.vitepress/cache
+.vuepress/dist
+.docusaurus/
+.astro/
+
+# ==========================================
+# Generated archives and binaries
+# ==========================================
+*.tgz
+lib-cov/
+build/Release/

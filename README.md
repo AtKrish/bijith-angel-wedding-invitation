@@ -1,103 +1,158 @@
 # Bijith & Angel — Wedding Invitation
 
-A responsive static invitation with an envelope opening, supplied photos and the ring_02 model, music, scratch-to-reveal date, countdown, photo gallery, and venue directions. It has no backend or database. Production hosting is Apache on CentOS under `/var/www/html`.
+A responsive static wedding invitation featuring an animated envelope opening, wedding photographs, 3D gold rings, background music, scratch-to-reveal date, countdown, photo gallery, and venue directions.
 
-## Project layout
+**Architecture:** Static website built with Vite. No backend or database required.
+
+## Project Structure
 
 ```text
 .
-├── index.html                 # Generated standalone page for double-click / Apache
-├── app.html                   # Vite source page
-├── package.json / lockfile    # Reproducible Node build dependencies
-├── vite.config.js             # Relative paths and self-contained file-open build
-├── public/assets/             # Original photos, music, and ring_02.glb
-├── src/css/                   # Responsive styles
-├── src/js/                    # Config and interactions
-├── dist/                      # Generated static site
-└── deploy/apache/
-    ├── bijith-invitation.conf # Apache MIME and document-root settings
-    └── deploy-centos.sh       # Install Apache and publish to /var/www/html
+├── index.html
+├── app.html
+├── package.json
+├── package-lock.json
+├── vite.config.js
+├── public/
+│   └── assets/
+│       ├── photos/
+│       ├── audio/
+│       └── models/
+├── src/
+│   ├── css/
+│   └── js/
+├── dist/
+└── deploy/
+    └── apache/
+        ├── bijith-invitation.conf
+        └── deploy-centos.sh
 ```
 
-The build embeds its JavaScript and the ring model in `dist/app.html`, then generates the root `index.html` as a standalone copy with relative references into `dist/assets/`. After `npm run build`, double-click the root `index.html` to open the invitation directly. Keep `dist/` beside it. Apache publishes that same root index and `dist/` tree under `/var/www/html`.
+*Note: The directory names above are illustrative. Refer to the actual project structure.*
 
-## Build locally
+## Prerequisites
 
-Install Node.js 22 LTS (or Node.js 20.19+). From this project folder:
+- Node.js 22 LTS or Node.js 20.19+
+- npm
+- Git
 
-```powershell
+## Local Development
+
+Clone the repository:
+
+```bash
+git clone https://github.com/AtKrish/bijith-angel-wedding-invitation.git
+cd bijith-angel-wedding-invitation
+```
+
+Install dependencies:
+
+```bash
+npm ci
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Build the production website:
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+## Production Hosting
+
+The website is a static application and can be hosted using:
+
+- AWS S3 and CloudFront
+- AWS EC2 with Apache or Nginx
+- Cloudflare Pages
+- GitHub Pages
+
+No continuously running application backend is required for the core invitation functionality.
+
+## AWS EC2 Deployment
+
+The project can also be deployed to a CentOS EC2 instance using Apache.
+
+The deployment scripts and Apache configuration are located in:
+
+```text
+deploy/apache/
+```
+
+For EC2 deployment:
+
+1. Configure the EC2 security group to allow HTTP (80) and HTTPS (443).
+2. Restrict SSH (22) access to your own IP.
+3. Install Apache.
+4. Upload the production build.
+5. Configure the Apache document root.
+6. Enable HTTPS before sharing the invitation publicly.
+
+Use an Elastic IP if you want a stable public IPv4 address.
+
+## Updating the Website
+
+After modifying the website:
+
+```bash
 npm ci
 npm run build
 ```
 
-For local development, run `npm run dev`. To test the production output locally, run `npm run preview`. After the build completes, double-click the project-root `index.html`. It is the full built invitation, not a launcher, and needs no server. Keep `dist/` beside it.
+Deploy the newly generated production files to your hosting provider.
 
-## Publish on an AWS EC2 CentOS instance with Apache
+## Configuration
 
-These steps target CentOS Stream 9/10 with `dnf`, the usual `httpd` package, and the Apache document root `/var/www/html`. CentOS images can use different SSH usernames; use the username documented for the AMI you launched (often `centos`).
+Wedding-related configuration is maintained in:
 
-### 1. Prepare the EC2 instance
-
-1. Launch a CentOS Stream instance and note its public IPv4 address.
-2. In the instance security group, allow inbound TCP port **80** from the visitors who should see the invitation. For a public IPv4 invitation, that is `0.0.0.0/0`; add IPv6 access only if the instance/VPC uses IPv6.
-3. Allow SSH TCP port **22** only from your current IP address. AWS recommends restricting SSH rather than opening it to all addresses.
-4. Connect from PowerShell. Replace the key path, username, and address:
-
-```powershell
-ssh -i "$env:USERPROFILE\Downloads\bijith-key.pem" centos@EC2_PUBLIC_IP
+```text
+src/js/config.js
 ```
 
-### 2. Copy the project to EC2
+Update the following details there, where supported by the existing implementation:
 
-From another PowerShell window, in the project root, copy the built output and deploy files. Replace the key, user, and IP as needed:
+- Couple names
+- Wedding date
+- Venue information
+- Google Maps directions
+- Background music
+- Countdown settings
+- Interaction settings
 
-```powershell
-$key = "$env:USERPROFILE\Downloads\bijith-key.pem"
-$server = "centos@EC2_PUBLIC_IP"
-ssh -i $key $server "mkdir -p ~/bijith-invitation"
-scp -i $key -r index.html dist deploy "$($server):~/bijith-invitation/"
+Current countdown target:
+
+```text
+2027-01-25T00:00:00+05:30
 ```
 
-You do not need to copy `node_modules/` to the server. Node is only needed to build; Apache serves static files.
+This represents midnight on 25 January 2027 in India Standard Time. Update the time if the actual ceremony time is confirmed.
 
-### 3. Install Apache and publish
+## Assets
 
-Back in the EC2 SSH session:
+Original wedding photographs, audio files and 3D ring models are maintained in the project's asset directories.
 
-```sh
-sudo bash ~/bijith-invitation/deploy/apache/deploy-centos.sh
-```
+The website uses WebGL for 3D rendering where supported, with appropriate fallbacks.
 
-The script installs `httpd`, copies the launcher and `dist/` into `/var/www/html`, installs the Apache MIME configuration, restores the default SELinux web-content labels when available, opens HTTP in `firewalld` when it is active, checks Apache configuration, and enables the service at boot.
+Music playback starts after visitor interaction to comply with browser autoplay restrictions.
 
-Open `http://EC2_PUBLIC_IP/`. AWS security groups must allow HTTP, and the CentOS host firewall must allow HTTP if `firewalld` is active. Apache must be able to read the files; the deployment script installs them with public read permissions.
+## Security
 
-For a domain name, point its DNS record to the instance (an Elastic IP avoids the address changing after stop/start). Configure HTTPS before sharing the invitation broadly; HTTP alone is not encrypted.
+- Never commit `.env` files or AWS credentials.
+- Keep SSH access restricted.
+- Enable HTTPS.
+- Avoid exposing private configuration or access tokens.
 
-### Updating the invitation
+## Repository
 
-Edit the source/configuration, then locally run:
-
-```powershell
-npm ci
-npm run build
-```
-
-Copy the updated build and deployment files with the same `scp` command, then run the deploy script again over SSH. It overwrites matching build files in `/var/www/html` and keeps the Apache service configuration.
-
-## Configuration and assets
-
-Change names, wedding date, venue, map URL, music, and interaction settings in `src/js/config.js`. Countdown target `2027-01-25T00:00:00+05:30` is a provisional midnight in Asia/Kolkata; ceremony/reception details remain `null` until confirmed. Original media is in `public/assets/` and is copied into `dist/assets/` by Vite.
-
-The invitation starts music only after the visitor opens the envelope. WebGL is optional and has a fallback. Google Fonts use system fallbacks when offline.
-
-## References
-
-- [AWS EC2 security-group rules](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/security-group-rules-reference.html)
-- [Red Hat Apache HTTP Server setup](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html/deploying_web_servers_and_reverse_proxies/setting-up-the-apache-http-web-server)
-- [Red Hat SELinux guidance](https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/10/html-single/using_selinux/index)
-
-
-
-
-
+[GitHub – Bijith & Angel Wedding Invitation](https://github.com/AtKrish/bijith-angel-wedding-invitation)
