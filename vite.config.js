@@ -27,8 +27,14 @@ const inlineInvitation = {
     html = html.replace(/<link rel="modulepreload"[^>]*>/g, '');
     html = html.replace(/(<link rel="stylesheet[^>]*?)\s+crossorigin(?=[\s>])/gi, '$1');
     html = html.replace('</body>', () => `<script>${code}</script>\n  </body>`);
-    fs.writeFileSync(builtPage, html, 'utf8');
-    const rootHtml = html.replaceAll('./assets/', './dist/assets/');
+    const stylesheet = html.match(/<link rel="stylesheet" href="([^"]+)"[^>]*>/);
+    if (!stylesheet) throw new Error('Could not find the Vite stylesheet in dist/app.html.');
+    const stylesheetPath = path.join(distDir, stylesheet[1].replace(/^\.\//, ''));
+    const styles = fs.readFileSync(stylesheetPath, 'utf8').replace(/<\/style/gi, '<\\/style');
+    const productionHtml = html.replace(stylesheet[0], `<style>${styles}</style>`);
+    fs.writeFileSync(builtPage, productionHtml, 'utf8');
+    fs.writeFileSync(path.join(distDir, 'index.html'), productionHtml, 'utf8');
+    const rootHtml = productionHtml.replaceAll('./assets/', './dist/assets/');
     fs.writeFileSync(path.join(projectRoot, 'index.html'), rootHtml, 'utf8');
   }
 };
