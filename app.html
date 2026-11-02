@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#faf7f2" />
+    <meta name="description" content="A wedding invitation from Bijith & Angel, 25 January 2027." />
+    <title>Bijith & Angel — Wedding Invitation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div class="envelope-screen" id="envelope-screen" aria-label="Wedding invitation envelope">
+      <div class="envelope-wrap">
+        <p class="eyebrow">A little something for you</p>
+        <div class="envelope" id="envelope">
+          <div class="letter-peek"><span class="letter-monogram">B <i>&</i> A</span><span>Wedding Invitation</span></div>
+          <div class="envelope-back"></div><div class="envelope-pocket"></div>
+          <div class="envelope-flap"></div>
+          <button class="seal" id="open-invitation" aria-label="Open the wedding invitation" onclick="window.openEnvelopeFromFile()"><span> B <b>&</b> A </span></button>
+          <span class="for-you">For You</span>
+        </div>
+        <p class="tap-note">Tap the seal to open</p>
+      </div>
+    </div>
+
+    <main id="invitation" class="invitation" aria-hidden="true">
+      <header class="site-header"><a href="#top" class="brand">B <i>&</i> A</a><span id="header-date">25 · 01 · 2027</span><a href="#details" class="header-link">The celebration</a></header>
+      <section class="hero section" id="top">
+        <div class="hero-copy reveal"><span class="eyebrow">With joyful hearts</span><div class="ornament">✦ <span>❧</span> ✦</div>
+          <h1>Bijith <em>&</em><br />Angel</h1>
+          <p class="welcome">Together with our families, we would like to invite you to celebrate the most special day of our lives. It would be an honor to have you present with us as we begin this new journey.</p>
+          <a href="#date" class="text-link">A day to remember <span>↓</span></a>
+        </div>
+        <figure class="hero-photo reveal"><img src="./assets/photo1.jpg" alt="Bijith and Angel sharing a tender moment" fetchpriority="high"/><figcaption>Two hearts, one beautiful beginning</figcaption></figure>
+        <div class="hero-side">A NEW CHAPTER · A LIFETIME OF LOVE</div>
+      </section>
+
+      <section class="date-section section" id="date"><div class="date-photo-bg" aria-hidden="true"><img src="./assets/photo2.jpg" alt="" loading="lazy" /></div><div class="section-heading reveal"><span class="eyebrow">Save the date</span><h2>A moment made for us</h2><p>There is a little magic beneath the gold.</p></div>
+        <div class="scratch-card reveal"><div class="scratch-inner"><span class="eyebrow">The day we say “I do”</span><p class="date-revealed date-shown" aria-live="polite">25 January 2027</p><span class="date-flourish">— ✦ —</span></div><canvas id="scratch-canvas" aria-hidden="true"></canvas></div>
+        <button class="outline-button reveal" id="reveal-date" onclick="document.querySelector('.date-revealed').classList.add('date-shown');document.getElementById('scratch-canvas').classList.add('scratched')">Reveal wedding date</button>
+        <p class="scratch-hint">Gently brush away the gold to reveal our date</p>
+      </section>
+
+      <section class="rings-section section" id="rings"><div class="section-heading reveal"><span class="eyebrow">A promise, held close</span><h2>Two rings. One forever.</h2><p>May every day begin with the same promise.</p></div><div class="ring-photo-bg" aria-hidden="true"><img src="./assets/photo4.jpg" alt="" loading="lazy" /></div><div class="ring-stage" id="ring-stage"><canvas id="rings-canvas" aria-label="Three-dimensional gold wedding rings"></canvas><div class="ring-fallback" id="ring-fallback" hidden><span>◯</span><span>◯</span></div></div></section>
+
+      <section class="countdown-section section" id="countdown"><span class="eyebrow">Until we begin</span><h2>Counting every moment</h2><div class="countdown" aria-label="Countdown to the wedding"><div><strong id="days">—</strong><span>Days</span></div><i>:</i><div><strong id="hours">—</strong><span>Hours</span></div><i>:</i><div><strong id="minutes">—</strong><span>Minutes</span></div><i>:</i><div><strong id="seconds">—</strong><span>Seconds</span></div></div><p class="countdown-note">Until our wedding day · <span id="wedding-date-label">25 January 2027</span></p><p class="countdown-passed" id="countdown-passed" hidden></p></section>
+
+      <section class="gallery-section section" id="gallery"><div class="section-heading reveal"><span class="eyebrow">Little moments, held forever</span><h2>Our story in pictures</h2></div><div class="gallery"><button class="gallery-item gallery-one reveal" data-image="./assets/photo2.jpg" aria-label="View a photograph of Bijith and Angel together"><img src="./assets/photo2.jpg" alt="Bijith and Angel seated together in the garden" loading="lazy"/><span>In every season</span></button><button class="gallery-item gallery-two reveal" data-image="./assets/photo3.jpg" aria-label="View a photograph of Bijith and Angel together"><img src="./assets/photo3.jpg" alt="Bijith and Angel sharing a smile by a brick wall" loading="lazy"/><span>Every little glance</span></button><button class="gallery-item gallery-three reveal" data-image="./assets/photo4.jpg" aria-label="View a photograph of Bijith and Angel together"><img src="./assets/photo4.jpg" alt="Angel and Bijith standing side by side" loading="lazy"/><span>Side by side</span></button><button class="gallery-item gallery-four reveal" data-image="./assets/photo1.jpg" aria-label="View a photograph of Bijith and Angel together"><img src="./assets/photo1.jpg" alt="A tender moment between Bijith and Angel" loading="lazy"/><span>And always, us</span></button></div></section>
+
+      <section class="details-section section" id="details"><div class="details-card reveal"><span class="eyebrow">The day & the place</span><div class="ornament">✦ <span>❧</span> ✦</div><h2>Join us as our<br /><em>forever begins</em></h2><p class="detail-date"><span id="detail-weekday">Monday</span><br /><strong id="detail-date">25 January 2027</strong></p><div class="detail-rule"></div><p class="eyebrow">Our celebration</p><p class="venue-name">St Joseph Parish Hall</p><p class="venue-location">Kottamam</p><a class="gold-button" href="https://maps.app.goo.gl/Js7CfH1nhZHCUMNg7" target="_blank" rel="noopener noreferrer">Open in Google Maps <span>↗</span></a><p class="detail-note">We look forward to celebrating with you.</p></div></section>
+
+      <footer class="closing-section section" id="closing"><div class="closing-rings" aria-hidden="true">✧ <span>◯</span><span>◯</span> ✧</div><div class="ornament">✦ <span>❧</span> ✦</div><h2>Come bless<br />our beginning.</h2><p>— With love, Bijith & Angel</p><a href="#top" class="back-top">Back to top ↑</a><span class="footer-date" id="footer-date">25 · 01 · 2027</span></footer>
+    </main>
+
+    <div class="audio-controls" id="audio-controls" hidden><button id="audio-toggle" aria-label="Pause background music" aria-pressed="true"><span class="audio-bars">♫</span></button></div>
+    <audio id="background-music" src="./assets/bgm.mp3" preload="none" loop></audio>
+    <dialog class="lightbox" id="lightbox"><button class="lightbox-close" aria-label="Close photograph">×</button><button class="lightbox-prev" aria-label="Previous photograph">‹</button><img alt=""/><button class="lightbox-next" aria-label="Next photograph">›</button><p class="lightbox-count"></p></dialog>
+    <script>
+      window.openEnvelopeFromFile = function () {
+        const envelope = document.getElementById('envelope');
+        if (!envelope || envelope.classList.contains('opening')) return;
+        envelope.classList.add('opening');
+        const opener = document.getElementById('open-invitation');
+        if (opener) opener.disabled = true;
+        const music = document.getElementById('background-music');
+        if (music) { music.volume = 0.35; music.loop = true; music.play().catch(function () {}); }
+        window.setTimeout(function () {
+          const screen = document.getElementById('envelope-screen');
+          const invitation = document.getElementById('invitation');
+          const controls = document.getElementById('audio-controls');
+          if (screen) screen.classList.add('dismissed');
+          if (invitation) { invitation.classList.add('is-open'); invitation.setAttribute('aria-hidden', 'false'); }
+          if (controls) controls.hidden = false;
+          document.body.classList.add('opened');
+          if (typeof window.startInvitationRings === 'function') window.startInvitationRings();
+          document.querySelectorAll('.reveal').forEach(function (element) { element.classList.add('visible'); });
+        }, window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 700);
+      };
+    </script>    <script type="module" src="/src/js/main.js"></script>
+  </body>
+</html>
+
+
+
+
+
