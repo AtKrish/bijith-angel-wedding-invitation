@@ -2,8 +2,8 @@ export const weddingConfig = {
   couple: { personOne: 'Bijith', personTwo: 'Angel' },
   event: {
     weddingDate: '2027-01-25',
-    // Provisional target: midnight at the start of the wedding date in Asia/Kolkata.
-    countdownDateTime: '2027-01-25T00:00:00+05:30',
+    // Ceremony countdown target: 10:30 AM on the wedding date in Asia/Kolkata.
+    countdownDateTime: '2027-01-25T10:30:00+05:30',
     ceremonyTime: null, receptionDate: null, receptionTime: null,
     countdownPassedMessage: 'The day has arrived. We cannot wait to celebrate with you.',
     venueName: 'St Joseph Parish Hall', venueAddress: 'St Joseph Parish Hall, Kottamam',

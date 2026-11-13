@@ -133,10 +133,10 @@ Update the following details there, where supported by the existing implementati
 Current countdown target:
 
 ```text
-2027-01-25T00:00:00+05:30
+2027-01-25T10:30:00+05:30
 ```
 
-This represents midnight on 25 January 2027 in India Standard Time. Update the time if the actual ceremony time is confirmed.
+This represents 10:30 AM on 25 January 2027 in India Standard Time.
 
 ## Assets
 
