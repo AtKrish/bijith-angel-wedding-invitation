@@ -1,12 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { FontLoader } from 'three/addons/loaders/FontLoader.js';
-import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
-import typeface from 'three/examples/fonts/gentilis_regular.typeface.json';
-
-const engravingFont = new FontLoader().parse(typeface);
-
 export function initRings(config) {
   const canvas = document.querySelector('#rings-canvas');
   const fallback = document.querySelector('#ring-fallback');
@@ -56,8 +50,8 @@ export function initRings(config) {
   let celebrated = false;
   try { celebrated = sessionStorage.getItem('ring-interlock-celebrated') === '1'; } catch {}
   const ringSpecs = [
-    { name: 'Bijith', side: -1, startEuler: new THREE.Euler(-0.18, 0.42, -0.22), endEuler: new THREE.Euler(0.38, 0.12, -0.06) },
-    { name: 'Angel', side: 1, startEuler: new THREE.Euler(0.2, -0.4, 0.22), endEuler: new THREE.Euler(-0.38, -0.12, 0.06) }
+    { side: -1, startEuler: new THREE.Euler(-0.18, 0.42, -0.22), endEuler: new THREE.Euler(0.38, 0.12, -0.06) },
+    { side: 1, startEuler: new THREE.Euler(0.2, -0.4, 0.22), endEuler: new THREE.Euler(-0.38, -0.12, 0.06) }
   ];
 
   new GLTFLoader().load(config.assets.ringModel, gltf => {
@@ -67,7 +61,6 @@ export function initRings(config) {
       const bounds = new THREE.Box3().setFromObject(model);
       const size = bounds.getSize(new THREE.Vector3());
       const scale = 1.35 / Math.max(size.x, size.y, size.z);
-      const frontZ = bounds.max.z + 0.05;
       model.scale.setScalar(scale);
       bounds.setFromObject(model);
       model.position.sub(bounds.getCenter(new THREE.Vector3()));
@@ -87,7 +80,6 @@ export function initRings(config) {
         node.castShadow = true;
         node.receiveShadow = true;
       });
-      addCurvedEngraving(model, spec.name, frontZ);
 
       const rig = new THREE.Group();
       rig.add(model);
@@ -108,43 +100,10 @@ export function initRings(config) {
     if (fallback) fallback.hidden = false;
   });
 
-  function addCurvedEngraving(model, name, frontZ) {
-    const size = 1.15;
-    const gap = 0.08;
-    const letters = [...name].map(character => {
-      const geometry = new TextGeometry(character, {
-        font: engravingFont, size, depth: 0.035,
-        curveSegments: 6, bevelEnabled: true,
-        bevelThickness: 0.012, bevelSize: 0.012, bevelSegments: 2
-      });
-      geometry.computeBoundingBox();
-      const width = geometry.boundingBox.max.x - geometry.boundingBox.min.x;
-      const height = geometry.boundingBox.max.y - geometry.boundingBox.min.y;
-      geometry.translate(-width / 2, -height / 2, 0);
-      return { geometry, width };
-    });
-    const totalWidth = letters.reduce((sum, letter) => sum + letter.width, 0) + gap * (letters.length - 1);
-    let distance = -totalWidth / 2;
-    const radius = 10.53;
-    const engraving = new THREE.Group();
-    const material = new THREE.MeshStandardMaterial({ color: 0x72500e, metalness: 0.28, roughness: 0.34, emissive: 0x120900, emissiveIntensity: 0.1 });
-    for (const letter of letters) {
-      const center = distance + letter.width / 2;
-      const angle = Math.PI / 2 - center / radius;
-      const mesh = new THREE.Mesh(letter.geometry, material);
-      mesh.position.set(radius * Math.cos(angle), radius * Math.sin(angle), frontZ);
-      mesh.rotation.z = angle - Math.PI / 2;
-      mesh.castShadow = true;
-      engraving.add(mesh);
-      distance += letter.width + gap;
-    }
-    model.add(engraving);
-  }
-
   function resize() {
     const width = Math.max(1, canvas.clientWidth || stage.clientWidth || window.innerWidth);
     const height = Math.max(1, canvas.clientHeight || stage.clientHeight || window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 760 ? 1.1 : 1.35));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, window.innerWidth < 760 ? 1.6 : 1.35));
     renderer.setSize(width, height, false);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
