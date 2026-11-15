@@ -19,6 +19,9 @@ window.startInvitationRings = () => {
   try { initRings(config); } catch (error) { console.warn('3D rings are unavailable.', error); }
 };
 
+// The envelope can open before this bundled module finishes loading. Start the rings when it catches up.
+if (document.body.classList.contains('opened')) window.startInvitationRings();
+
 function syncAudio() {
   const playing = !audio.paused;
   playButton.setAttribute('aria-label', playing ? 'Pause background music' : 'Play background music');
