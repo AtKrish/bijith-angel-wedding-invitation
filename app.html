@@ -74,7 +74,16 @@
           if (invitation) { invitation.classList.add('is-open'); invitation.setAttribute('aria-hidden', 'false'); }
           if (controls) controls.hidden = false;
           document.body.classList.add('opened');
-          if (typeof window.startInvitationRings === 'function') window.startInvitationRings();
+          function startRingsWhenReady(attempt) {
+            if (typeof window.startInvitationRings === 'function') {
+              window.startInvitationRings();
+            } else if (attempt < 50) {
+              window.setTimeout(function () { startRingsWhenReady(attempt + 1); }, 100);
+            } else {
+              console.warn('The ring renderer did not initialize after the invitation opened.');
+            }
+          }
+          startRingsWhenReady(0);
           document.querySelectorAll('.reveal').forEach(function (element) { element.classList.add('visible'); });
         }, window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 700);
       };
